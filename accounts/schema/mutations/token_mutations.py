@@ -24,21 +24,26 @@ class TokenMutation(graphene.Mutation):
         password: str,
     ):
         try:
-            user = User.objects.filter(email=email).first()
-            if user and user.check_password(password):
-                jwt_manager = JwtManager()
-                access_token = jwt_manager.generate_access_token(email)
-                refresh_token = jwt_manager.generate_refresh_token(email)
-                data = {
-                    'access_token': access_token,
-                    'refresh_token': refresh_token
-                }
-                return TokenMutation(data=data)
-            else:
-                raise GraphQLError('Given credentials are wrong')
+            user = User.objects.get(email=email)
+        except User.DoesNotExist as ne:
+            print(ne)
+            raise GraphQLError('User not found')
         except Exception as e:
             print(e)
             raise GraphQLError('Something went wrong')
+
+        if user and user.check_password(password):
+            jwt_manager = JwtManager()
+            access_token = jwt_manager.generate_access_token(email)
+            refresh_token = jwt_manager.generate_refresh_token(email)
+            data = {
+                'access_token': access_token,
+                'refresh_token': refresh_token
+            }
+            return TokenMutation(data=data)
+        else:
+            raise GraphQLError('Given credentials are wrong')
+
 
 
 class RefreshTokenMutation(graphene.Mutation):
