@@ -9,12 +9,6 @@ User = get_user_model()
 
 
 def get_email_from_auth_header(auth_header):
-    if not auth_header:
-        raise GraphQLError('Authorization header not provided')
-
-    if not auth_header.startswith('Bearer '):
-        raise GraphQLError('Invalid token type in header')
-
     access_token = auth_header[7:]
     jwt_manager = JwtManager()
 
@@ -34,6 +28,12 @@ def is_admin_helper(info) -> None:
 
 def login_helper(info) -> None:
     auth_header = info.context.headers.get('Authorization')
+    if not auth_header:
+        raise GraphQLError('Authorization header not provided')
+
+    if not auth_header.startswith('Bearer '):
+        raise GraphQLError('Invalid token type in header')
+
     email = get_email_from_auth_header(auth_header)
 
     try:
