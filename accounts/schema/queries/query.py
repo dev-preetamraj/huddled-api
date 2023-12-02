@@ -1,10 +1,13 @@
+import logging
 import graphene
 from accounts.schema.types import UserType
 from django.contrib.auth import get_user_model
-
-from huddled.decorators import login_required, admin_required
+from accounts.decorators import login_required, admin_required
 
 User = get_user_model()
+
+# Get an instance of logger
+logger = logging.getLogger('accounts')
 
 
 class AccountsQuery(graphene.ObjectType):

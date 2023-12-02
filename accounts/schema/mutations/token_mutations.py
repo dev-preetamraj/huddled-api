@@ -1,11 +1,14 @@
+import logging
 import graphene
 from accounts.jwt_manager import JwtManager
 from accounts.schema.types import AuthTokenType, RefreshTokenType
 from django.contrib.auth import get_user_model
 from graphql import GraphQLError
 
-
 User = get_user_model()
+
+# Get an instance of logger
+logger = logging.getLogger('accounts')
 
 
 class TokenMutation(graphene.Mutation):
@@ -16,20 +19,14 @@ class TokenMutation(graphene.Mutation):
         password = graphene.String(required=True)
 
     @classmethod
-    def mutate(
-        cls,
-        root,
-        info,
-        email: str,
-        password: str,
-    ):
+    def mutate(cls, root, info, email: str, password: str):
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist as ne:
-            print(ne)
+            logger.error(f'TokenMutation : {ne}')
             raise GraphQLError('User not found')
         except Exception as e:
-            print(e)
+            logger.error(f'TokenMutation : {e}')
             raise GraphQLError('Something went wrong')
 
         if user and user.check_password(password):
@@ -45,7 +42,6 @@ class TokenMutation(graphene.Mutation):
             raise GraphQLError('Given credentials are wrong')
 
 
-
 class RefreshTokenMutation(graphene.Mutation):
     data = graphene.Field(RefreshTokenType)
 
@@ -53,25 +49,21 @@ class RefreshTokenMutation(graphene.Mutation):
         refresh_token = graphene.String(required=True)
 
     @classmethod
-    def mutate(
-        cls,
-        root,
-        info,
-        refresh_token: str
-    ):
+    def mutate(cls, root, info, refresh_token: str):
         try:
             jwt_manager = JwtManager()
             access_token = jwt_manager.refresh_access_token(refresh_token)
-            if access_token is not None:
-                data = {
-                    'access_token': access_token
-                }
-                return RefreshTokenMutation(data=data)
-            else:
-                raise GraphQLError('Refresh token is expired or invalid')
         except Exception as e:
-            print(e)
+            logger.error(f'RefreshTokenMutation : {e}')
             raise GraphQLError('Something went wrong')
+
+        if access_token is not None:
+            data = {
+                'access_token': access_token
+            }
+            return RefreshTokenMutation(data=data)
+        else:
+            raise GraphQLError('Refresh token is expired or invalid')
 
 
 class VerifyTokenMutation(graphene.Mutation):
@@ -81,12 +73,7 @@ class VerifyTokenMutation(graphene.Mutation):
         access_token = graphene.String(required=True)
 
     @classmethod
-    def mutate(
-        cls,
-        root,
-        info,
-        access_token: str
-    ):
+    def mutate(cls, root, info, access_token: str):
         jwt_manager = JwtManager()
         if jwt_manager.verify_token(access_token):
             return VerifyTokenMutation(message='Access token verified')

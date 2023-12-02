@@ -1,12 +1,15 @@
 import re
-
+import logging
 import graphene
 from accounts.schema.types import UserType
-from typing import Optional
 from django.contrib.auth import get_user_model
 from graphql import GraphQLError
 
 User = get_user_model()
+
+
+# Get an instance of logger
+logger = logging.getLogger('accounts')
 
 
 class RegistrationMutation(graphene.Mutation):
@@ -49,6 +52,6 @@ class RegistrationMutation(graphene.Mutation):
                 password=kwargs.get('password')
             )
         except Exception as e:
-            print(e)
+            logger.error(f'RegistrationMutation : {e}')
             raise GraphQLError('Something went wrong')
         return RegistrationMutation(user=user)

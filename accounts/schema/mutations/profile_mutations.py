@@ -1,7 +1,14 @@
+import logging
+
 import graphene
+from graphql import GraphQLError
+
 from accounts.schema.types import UserType
-from huddled.decorators import login_required
+from accounts.decorators import login_required
 from enum import Enum
+
+# Get an instance of logger
+logger = logging.getLogger('accounts')
 
 
 class GenderEnum(Enum):
@@ -41,14 +48,17 @@ class ProfileMutation(graphene.Mutation):
     @classmethod
     @login_required
     def mutate(cls, root, info, **kwargs):
-        user = info.context.user
+        try:
+            user = info.context.user
+            for key, value in kwargs.items():
+                if key not in ['gender', 'relationship_status']:
+                    setattr(user, key, None if value == '' else value)
+                else:
+                    setattr(user, key, value.value)
 
-        for key, value in kwargs.items():
-            if key not in ['gender', 'relationship_status']:
-                setattr(user, key, None if value == '' else value)
-            else:
-                setattr(user, key, value.value)
-
-        user.save()
+            user.save()
+        except Exception as e:
+            logger.error(f'ProfileMutation : {e}')
+            raise GraphQLError('Something went wrong')
 
         return ProfileMutation(user=user)

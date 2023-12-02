@@ -1,11 +1,16 @@
+import logging
 from functools import wraps
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from graphql import GraphQLError
 from graphene import ResolveInfo
 
 from accounts.jwt_manager import JwtManager
 
 User = get_user_model()
+
+# Get an instance of logger
+logger = logging.getLogger('accounts')
 
 
 def get_email_from_auth_header(auth_header):
@@ -18,6 +23,11 @@ def get_email_from_auth_header(auth_header):
     payload = jwt_manager.get_payload(access_token)
     email = payload.get('sub')
     return email
+
+
+def update_last_login(user):
+    user.last_login = timezone.localtime()
+    user.save()
 
 
 def is_admin_helper(info) -> None:
@@ -38,11 +48,15 @@ def login_helper(info) -> None:
 
     try:
         user = User.objects.get(email=email)
-        info.context.user = user
-
+    except User.DoesNotExist as ne:
+        logger.error(f'decorator - login_helper : {ne}')
+        raise GraphQLError('User not found')
     except Exception as e:
-        print(e)
+        logger.error(f'decorator - login_helper : {e}')
         raise GraphQLError('Invalid token')
+
+    update_last_login(user)
+    info.context.user = user
 
 
 def login_required(func):
