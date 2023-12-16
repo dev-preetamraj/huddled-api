@@ -1,8 +1,6 @@
 import logging
-
 import graphene
 from graphql import GraphQLError
-
 from accounts.schema.types import UserType
 from accounts.decorators import login_required
 from enum import Enum
@@ -30,13 +28,8 @@ class ProfileMutation(graphene.Mutation):
     user = graphene.Field(UserType)
 
     class Arguments:
-        first_name = graphene.String()
-        middle_name = graphene.String()
-        last_name = graphene.String()
-        profile_picture = graphene.String()
         cover_picture = graphene.String()
         bio = graphene.String()
-        mobile_number = graphene.String()
         gender = graphene.Argument(graphene.Enum.from_enum(GenderEnum))
         relationship_status = graphene.Argument(graphene.Enum.from_enum(RelationshipEnum))
         street = graphene.String()

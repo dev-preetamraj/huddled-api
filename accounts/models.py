@@ -1,5 +1,4 @@
 import uuid
-
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -23,7 +22,6 @@ class CustomUser(AbstractUser):
     id = models.CharField(primary_key=True, unique=True, max_length=100, default=f'huddled_user_{uuid.uuid4()}')
     email = models.EmailField(max_length=100, unique=True)
     username = models.CharField(max_length=100, unique=True, default=f'huddled_{uuid.uuid4()}')
-    middle_name = models.CharField(max_length=50, null=True, blank=True)
     cover_picture = models.CharField(max_length=500, default=DEFAULT_COVER_URL)
     bio = models.CharField(max_length=150, null=True, blank=True)
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES, null=True, blank=True)
