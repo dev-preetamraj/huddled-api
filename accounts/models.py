@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -15,17 +17,15 @@ class CustomUser(AbstractUser):
         ('Divorced', 'Divorced'),
         ('Complicated', 'Complicated')
     )
-    DEFAULT_PROFILE_URL = ('https://res.cloudinary.com/dxgl4eyhq/image/upload/v1701036989/huddled/images/defaults'
-                           '/profile_ioi9ke.jpg')
     DEFAULT_COVER_URL = ('https://res.cloudinary.com/dxgl4eyhq/image/upload/v1701037044/huddled/images/defaults'
                          '/cover_x202x0.png')
 
+    id = models.CharField(primary_key=True, unique=True, max_length=100, default=f'huddled_user_{uuid.uuid4()}')
     email = models.EmailField(max_length=100, unique=True)
+    username = models.CharField(max_length=100, unique=True, default=f'huddled_{uuid.uuid4()}')
     middle_name = models.CharField(max_length=50, null=True, blank=True)
-    profile_picture = models.CharField(max_length=500, default=DEFAULT_PROFILE_URL)
     cover_picture = models.CharField(max_length=500, default=DEFAULT_COVER_URL)
     bio = models.CharField(max_length=150, null=True, blank=True)
-    mobile_number = models.CharField(max_length=10, null=True, blank=True)
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES, null=True, blank=True)
     relationship_status = models.CharField(max_length=11, choices=RELATIONSHIP_CHOICES, null=True, blank=True)
     street = models.CharField(max_length=50, null=True, blank=True)
