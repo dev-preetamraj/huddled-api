@@ -22,7 +22,7 @@ def is_admin_helper(info) -> None:
         raise GraphQLError('Admin access is required')
 
 
-def login_helper(info) -> None:
+def login_helper(info, func) -> None:
     auth_header = info.context.headers.get('Authorization')
     if not auth_header:
         raise GraphQLError('Authorization header not provided')
@@ -31,14 +31,14 @@ def login_helper(info) -> None:
         raise GraphQLError('Invalid token type in header')
 
     user_id = auth_header.split(' ')[1]
-
+    print(user_id)
     try:
         user = User.objects.get(id=user_id)
     except User.DoesNotExist as ne:
-        logger.error(f'decorator - login_helper : {ne}')
+        logger.error(f'decorator - login_helper inside <{func.__name__}> function : {ne}')
         raise GraphQLError('User not found')
     except Exception as e:
-        logger.error(f'decorator - login_helper : {e}')
+        logger.error(f'decorator - login_helper inside <{func.__name__}> function : {e}')
         raise GraphQLError('Invalid token')
 
     update_last_login(user)
@@ -49,7 +49,7 @@ def login_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         info = next(arg for arg in args if isinstance(arg, ResolveInfo))
-        login_helper(info)
+        login_helper(info, func)
         return func(*args, **kwargs)
 
     return wrapper
