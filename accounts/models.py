@@ -21,9 +21,9 @@ class CustomUser(AbstractUser):
     DEFAULT_COVER_URL = ('https://res.cloudinary.com/dxgl4eyhq/image/upload/v1701037044/huddled/images/defaults'
                          '/cover_x202x0.png')
 
-    id = models.CharField(primary_key=True, unique=True, max_length=100, default=f'huddled_user_{uuid.uuid4()}')
+    id = models.CharField(primary_key=True, unique=True, max_length=100)
     email = models.EmailField(max_length=100, unique=True)
-    username = models.CharField(max_length=100, unique=True, default=f'huddled_{uuid.uuid4()}')
+    username = models.CharField(max_length=100, unique=True)
     profile_picture = models.CharField(max_length=500, null=True, blank=True)
     cover_picture = models.CharField(max_length=500, default=DEFAULT_COVER_URL)
     bio = models.CharField(max_length=150, null=True, blank=True)
