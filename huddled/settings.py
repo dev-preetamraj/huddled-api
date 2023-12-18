@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import timedelta
+import cloudinary
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,6 +10,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Loading Env
 env_path = os.path.join(BASE_DIR, '.env')
 load_dotenv(dotenv_path=env_path)
+
+cloudinary.config(
+    cloud_name=os.getenv(key='CLOUDINARY_CLOUD_NAME'),
+    api_key=os.getenv(key='CLOUDINARY_API_KEY'),
+    api_secret=os.getenv(key='CLOUDINARY_SECRET_KEY'),
+    secure=True
+)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -19,7 +27,7 @@ SECRET_KEY = os.getenv(key='SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'RENDER' not in os.environ
 
-ALLOWED_HOSTS = ['192.168.0.179', '127.0.0.1']
+ALLOWED_HOSTS = ['192.168.0.179', '192.168.163.198', '127.0.0.1']
 
 RENDER_EXTERNAL_HOSTNAME = os.getenv(key='RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
@@ -135,6 +143,22 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# REST FRAMEWORK SETTINGS
+REST_FRAMEWORK = {
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'accounts.custom_rest_auth.JWTAuthentication'
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DATETIME_FORMAT': '%Y-%m-%d %H:%M:%S',
+}
 
 LOGGING = {
     'version': 1,
