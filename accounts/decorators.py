@@ -31,7 +31,6 @@ def login_helper(info, func) -> None:
         raise GraphQLError('Invalid token type in header')
 
     user_id = auth_header.split(' ')[1]
-    print(user_id)
     try:
         user = User.objects.get(id=user_id)
     except User.DoesNotExist as ne:
