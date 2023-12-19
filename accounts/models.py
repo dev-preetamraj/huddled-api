@@ -26,7 +26,7 @@ class CustomUser(AbstractUser):
     username = models.CharField(max_length=100, unique=True)
     profile_picture = models.CharField(max_length=500, null=True, blank=True)
     cover_picture = models.CharField(max_length=500, default=DEFAULT_COVER_URL)
-    bio = models.CharField(max_length=150, null=True, blank=True)
+    bio = models.CharField(max_length=100, null=True, blank=True)
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES, null=True, blank=True)
     relationship_status = models.CharField(max_length=11, choices=RELATIONSHIP_CHOICES, null=True, blank=True)
     street = models.CharField(max_length=50, null=True, blank=True)
