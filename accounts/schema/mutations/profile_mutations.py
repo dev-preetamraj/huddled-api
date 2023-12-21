@@ -1,5 +1,6 @@
 import logging
 import graphene
+from django.contrib.auth import get_user_model
 from graphql import GraphQLError
 from accounts.schema.types import UserType
 from accounts.decorators import login_required
@@ -7,6 +8,8 @@ from enum import Enum
 
 # Get an instance of logger
 logger = logging.getLogger('accounts')
+
+User = get_user_model()
 
 
 class GenderEnum(Enum):
@@ -28,7 +31,7 @@ class ProfileMutation(graphene.Mutation):
     user = graphene.Field(UserType)
 
     class Arguments:
-        cover_picture = graphene.String()
+        username = graphene.String()
         bio = graphene.String()
         gender = graphene.Argument(graphene.Enum.from_enum(GenderEnum))
         relationship_status = graphene.Argument(graphene.Enum.from_enum(RelationshipEnum))
@@ -44,10 +47,16 @@ class ProfileMutation(graphene.Mutation):
         try:
             user = info.context.user
             for key, value in kwargs.items():
-                if key not in ['gender', 'relationship_status']:
-                    setattr(user, key, None if value == '' else value)
-                else:
+                if key in ['gender', 'relationship_status']:
                     setattr(user, key, value.value)
+                elif key == 'username':
+                    is_username_unique = not User.objects.filter(username=value).exists()
+                    if is_username_unique:
+                        setattr(user, key, None if value == '' else value)
+                    else:
+                        return GraphQLError('Username not available')
+                else:
+                    setattr(user, key, None if value == '' else value)
 
             user.save()
         except Exception as e:
