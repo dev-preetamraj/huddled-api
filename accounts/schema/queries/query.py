@@ -14,6 +14,7 @@ class AccountsQuery(graphene.ObjectType):
     get_users = graphene.List(UserType)
     me = graphene.Field(UserType)
     suggested_users = graphene.List(UserType)
+    user_by_id = graphene.Field(UserType, user_id=graphene.String(required=True))
 
     @login_required
     @admin_required
@@ -28,3 +29,8 @@ class AccountsQuery(graphene.ObjectType):
     def resolve_suggested_users(self, info):
         user_id = info.context.user.id
         return User.objects.exclude(id=user_id)
+
+    @login_required
+    def resolve_user_by_id(self, info, user_id: str):
+        user = User.objects.get(id=user_id)
+        return user
