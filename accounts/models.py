@@ -24,6 +24,8 @@ class CustomUser(AbstractUser):
     id = models.CharField(primary_key=True, unique=True, max_length=100)
     email = models.EmailField(max_length=100, unique=True)
     username = models.CharField(max_length=100, unique=True)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
     profile_picture = models.CharField(max_length=500, null=True, blank=True)
     cover_picture = models.CharField(max_length=500, default=DEFAULT_COVER_URL)
     bio = models.CharField(max_length=100, null=True, blank=True)
@@ -34,6 +36,7 @@ class CustomUser(AbstractUser):
     state = models.CharField(max_length=50, null=True, blank=True)
     postal_code = models.CharField(max_length=10, null=True, blank=True)
     country = models.CharField(max_length=50, null=True, blank=True)
+    is_huddled_verified = models.BooleanField(default=False)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]

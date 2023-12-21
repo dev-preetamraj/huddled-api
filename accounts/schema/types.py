@@ -7,4 +7,4 @@ User = get_user_model()
 class UserType(DjangoObjectType):
     class Meta:
         model = User
-        exclude = ['password', 'email', 'first_name', 'last_name']
+        exclude = ['password']

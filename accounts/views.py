@@ -29,7 +29,9 @@ class RegisterView(APIView):
             user = User(
                 id=user_id,
                 email=email,
-                username=email
+                username=email,
+                first_name=data.get('first_name'),
+                last_name=data.get('last_name')
             )
             user.save()
             return Response({

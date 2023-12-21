@@ -13,6 +13,7 @@ logger = logging.getLogger('accounts')
 class AccountsQuery(graphene.ObjectType):
     get_users = graphene.List(UserType)
     me = graphene.Field(UserType)
+    suggested_users = graphene.List(UserType)
 
     @login_required
     @admin_required
@@ -22,3 +23,8 @@ class AccountsQuery(graphene.ObjectType):
     @login_required
     def resolve_me(self, info):
         return info.context.user
+
+    @login_required
+    def resolve_suggested_users(self, info):
+        user_id = info.context.user.id
+        return User.objects.exclude(id=user_id)
