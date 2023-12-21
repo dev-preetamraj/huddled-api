@@ -31,7 +31,8 @@ class RegisterView(APIView):
                 email=email,
                 username=email,
                 first_name=data.get('first_name'),
-                last_name=data.get('last_name')
+                last_name=data.get('last_name'),
+                profile_picture=data.get('image_url')
             )
             user.save()
             return Response({
