@@ -15,7 +15,7 @@ User = get_user_model()
 class GenderEnum(Enum):
     MALE = 'Male'
     FEMALE = 'Female'
-    OTHERS = 'Others',
+    OTHERS = 'Others'
     NONE = None
 
 
@@ -23,7 +23,7 @@ class RelationshipEnum(Enum):
     SINGLE = 'Single'
     MARRIED = 'Married'
     DIVORCED = 'Divorced'
-    COMPLICATED = 'Complicated',
+    COMPLICATED = 'Complicated'
     NONE = None
 
 
