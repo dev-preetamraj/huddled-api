@@ -15,7 +15,6 @@ class AccountsQuery(graphene.ObjectType):
     me = graphene.Field(UserType)
     suggested_users = graphene.List(UserType)
     user_by_id = graphene.Field(UserType, user_id=graphene.String(required=True))
-    discover_users = graphene.List(DiscoverUserTypes)
 
     @login_required
     @admin_required
@@ -28,25 +27,17 @@ class AccountsQuery(graphene.ObjectType):
 
     @login_required
     def resolve_suggested_users(self, info):
-        user_id = info.context.user.id
-        return User.objects.exclude(id=user_id)
+        requested_user = info.context.user
+        users = User.objects.exclude(id=requested_user.id)
+        data = []
+
+        for user in users:
+            friendship = requested_user.friends.filter(friend=user).first()
+            if friendship is None:
+                data.append(user)
+        return data
 
     @login_required
     def resolve_user_by_id(self, info, user_id: str):
         user = User.objects.get(id=user_id)
         return user
-
-    @login_required
-    def resolve_discover_users(self, info):
-        requested_user = info.context.user
-        users = User.objects.all()
-        data = []
-
-        for user in users:
-            friendship = requested_user.friends.filter(friend=user).first()
-            discover_user = DiscoverUserTypes(
-                user=user,
-                friendship=friendship
-            )
-            data.append(discover_user)
-        return data
