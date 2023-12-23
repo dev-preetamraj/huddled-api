@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'graphene_django',
     'corsheaders',
     'rest_framework',
-    'accounts'
+    'accounts',
+    'friendship'
 ]
 
 MIDDLEWARE = [
@@ -184,10 +185,21 @@ LOGGING = {
             'formatter': 'file',
             'filename': 'accounts.log',
         },
+        'friendship.file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'formatter': 'file',
+            'filename': 'accounts.log',
+        },
     },
     'loggers': {
         'accounts': {
             'handlers': ['console', 'accounts.file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'friendship': {
+            'handlers': ['console', 'friendship.file'],
             'level': 'INFO',
             'propagate': True,
         },
