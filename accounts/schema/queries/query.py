@@ -1,24 +1,27 @@
 import logging
+
 import graphene
-from accounts.schema.types import UserType, DiscoverUserTypes
 from django.contrib.auth import get_user_model
+from graphene import relay
+
 from accounts.decorators import login_required, admin_required
+from accounts.schema.types import UserNode, UserConnection
 
 User = get_user_model()
 
 # Get an instance of logger
-logger = logging.getLogger('accounts')
+logger = logging.getLogger("accounts")
 
 
 class AccountsQuery(graphene.ObjectType):
-    get_users = graphene.List(UserType)
-    me = graphene.Field(UserType)
-    suggested_users = graphene.List(UserType)
-    user_by_id = graphene.Field(UserType, user_id=graphene.String(required=True))
+    get_users = relay.ConnectionField(UserConnection)
+    me = graphene.Field(UserNode)
+    suggested_users = relay.ConnectionField(UserConnection)
+    user_by_id = graphene.Field(UserNode, user_id=graphene.String(required=True))
 
-    @login_required
     @admin_required
-    def resolve_get_users(self, info):
+    @login_required
+    def resolve_get_users(self, info, **kwargs):
         return User.objects.all()
 
     @login_required
