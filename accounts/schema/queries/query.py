@@ -19,8 +19,8 @@ class AccountsQuery(graphene.ObjectType):
     suggested_users = relay.ConnectionField(UserConnection)
     user_by_id = graphene.Field(UserNode, user_id=graphene.String(required=True))
 
-    @admin_required
     @login_required
+    @admin_required
     def resolve_get_users(self, info, **kwargs):
         return User.objects.all()
 
@@ -29,7 +29,7 @@ class AccountsQuery(graphene.ObjectType):
         return info.context.user
 
     @login_required
-    def resolve_suggested_users(self, info):
+    def resolve_suggested_users(self, info, **kwargs):
         requested_user = info.context.user
         users = User.objects.exclude(id=requested_user.id)
         data = []
