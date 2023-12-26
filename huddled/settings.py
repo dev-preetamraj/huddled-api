@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv(key="SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = "RENDER" not in os.environ
 
-ALLOWED_HOSTS = ["192.168.0.179", "192.168.163.198", "127.0.0.1"]
+ALLOWED_HOSTS = ["192.168.0.179", "192.168.133.198", "127.0.0.1"]
 
 RENDER_EXTERNAL_HOSTNAME = os.getenv(key="RENDER_EXTERNAL_HOSTNAME")
 if RENDER_EXTERNAL_HOSTNAME:

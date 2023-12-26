@@ -26,16 +26,17 @@ class FriendshipQuery(graphene.ObjectType):
             requests = [friendship.user for friendship in friendships]
             return requests
         except Exception as e:
-            logger.error(e)
+            logger.error(f'FriendshipQuery -> resolve_friend_requests: {e}')
             raise GraphQLError("Something went wrong")
 
     @login_required
     def resolve_sent_requests(self, info, **kwargs):
         try:
             user = info.context.user
-            friendships = Friendship.objects.filter(user=user, is_accepted=False).all()
+            friendships = Friendship.objects.filter(
+                user=user, is_accepted=False).all()
             sent_requests = [friendship.friend for friendship in friendships]
             return sent_requests
         except Exception as e:
-            logger.error(e)
+            logger.error(f'FriendshipQuery -> resolve_sent_requests: {e}')
             raise GraphQLError("Something went wrong")
